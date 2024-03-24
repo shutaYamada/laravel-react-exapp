@@ -13,23 +13,20 @@ class TaskController extends Controller
      */
     public function index()
     {
-        //
+        return Task::orderByDesc('id')->get();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
+    
     /**
      * Store a newly created resource in storage.
      */
     public function store(StoreTaskRequest $request)
     {
-        //
+        $task = Task::create($request->all);
+
+        return $task
+            ?   response()->json($task, 201)
+            :   response()->json([], 500);
     }
 
     /**
@@ -40,27 +37,28 @@ class TaskController extends Controller
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Task $task)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(UpdateTaskRequest $request, Task $task)
-    {
-        //
+{
+    try {
+        $task->update($request->validated());
+        return response()->json($task);
+    } catch (\Exception $e) {
+        return response()->json(['message' => 'Failed to update task', 'error' => $e->getMessage()], 500);
     }
+}
+
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Task $task)
     {
-        //
+        return $task->delete()
+        ?   response()->json($task)
+        :   response()->json([], 500);
     }
 }
